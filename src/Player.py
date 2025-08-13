@@ -10,6 +10,7 @@ class Player(SpriteEntity):
 
     def __init__(self, x ,y, width, height):
         super().__init__(x ,y, width, height)
+        self.fruits = 0
         self.rect = pygame.Rect(x,y,width,height)
         self.x_vel = 0
         self.y_vel = 0
@@ -22,6 +23,7 @@ class Player(SpriteEntity):
         self.jump_key_pressed = False
         self.hit = False
         self.hit_count = 0
+        self.catch_fruit = False
 
     # Sprites
     def flip(self, sprites):
@@ -99,7 +101,11 @@ class Player(SpriteEntity):
     def take_hit(self):
         self.hit = True
         self.hit_count = 0
-
+        
+    def take_fruit(self, fruit):
+        self.catch_fruit = True
+        self.fruits += fruit
+        
     def update_sprite(self):
         sprite_sheet = "Idle"
         if self.hit:

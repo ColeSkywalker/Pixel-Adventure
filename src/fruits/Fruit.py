@@ -3,7 +3,7 @@ from os.path import isfile, join
 
 import pygame
 
-from config import ANIMATION_DELAY
+from config import ANIMATION_DELAY, WIDTH
 from src.Object import Object
 
 
@@ -12,9 +12,9 @@ class Fruit(Object):
         super().__init__(x, y, width, height)
         self.animation_count = 0
         self.sprite = None
-        self.type_Fruit = type_fruit
+        self.type_fruit = type_fruit
         self.took = False
-        sprite_path = f"assets/Items/Fruits/{self.type_Fruit}.png"
+        sprite_path = f"assets/Items/Fruits/{self.type_fruit}.png"
         self.sprites = self.load_sprite_sheet(sprite_path, width, height)
         self.sprite = self.sprites[0]
 
@@ -30,7 +30,6 @@ class Fruit(Object):
 
 
     def update_sprite(self):
-        sprite_sheet = self.type_Fruit
         sprite_index = (self.animation_count // ANIMATION_DELAY) % len(self.sprites)
         self.sprite = self.sprites[sprite_index]
         self.animation_count += 1
@@ -42,4 +41,9 @@ class Fruit(Object):
 
     def draw(self, win, offset_x):
         win.blit(self.sprite, (self.rect.x - offset_x, self.rect.y))
+
+
+
+
+
 
