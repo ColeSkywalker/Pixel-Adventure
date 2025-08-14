@@ -1,6 +1,6 @@
 import pygame
-from src.Player import Player
-from src.Utils import get_background
+from src.core.player import Player
+from src.core.utils import get_background
 from config import WIDTH, HEIGHT
 
 

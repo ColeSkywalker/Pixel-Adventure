@@ -2,7 +2,7 @@ import pygame.sprite
 from os import listdir
 from os.path import isfile, join
 
-from src.SpriteEntity import SpriteEntity
+from src.core.sprite_entity import SpriteEntity
 from config import *
 
 class Player(SpriteEntity):

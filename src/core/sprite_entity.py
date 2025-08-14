@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import pygame
 
-from src.Object import Object
+from src.core.object import Object
 
 
 class SpriteEntity(Object, ABC):

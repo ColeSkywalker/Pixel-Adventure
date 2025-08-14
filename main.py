@@ -1,7 +1,7 @@
 import pygame
 from config import WIDTH, HEIGHT
 
-from src.interface.chooseplayer import ChoosePlayer
+from src.interface.choose_player import ChoosePlayer
 
 from src.interface.menu import Menu
 from src.levels.level_1 import level_1

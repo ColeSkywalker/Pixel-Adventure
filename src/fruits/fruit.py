@@ -1,10 +1,7 @@
-from os import listdir
-from os.path import isfile, join
-
 import pygame
 
-from config import ANIMATION_DELAY, WIDTH
-from src.Object import Object
+from config import ANIMATION_DELAY
+from src.core.object import Object
 
 
 class Fruit(Object):

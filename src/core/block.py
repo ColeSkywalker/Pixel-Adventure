@@ -1,7 +1,7 @@
 import pygame
 from os.path import join
-from src.Object import Object
-from config import *
+from src.core.object import Object
+
 
 def get_block(size):
     path = join("assets", "Terrain", "Terrain.png")

@@ -1,9 +1,9 @@
 import pygame
 
 from config import WIDTH, HEIGHT, SCROLL_AREA_WIDTH, BLOCK_SIZE, FPS
-from src.Player import Player
-from src.Tilemap import Tilemap
-from src.Utils import get_background
+from src.core.player import Player
+from src.core.tilemap import Tilemap
+from src.core.utils import get_background
 
 pygame.init()
 pygame.display.set_caption("Platformer")

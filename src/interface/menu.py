@@ -1,9 +1,9 @@
 import pygame
 
-from src.Tilemap import Tilemap
-from src.Utils import get_background
-from config import WIDTH, HEIGHT, BLOCK_SIZE, FPS
-from src.interface.chooseplayer import ChoosePlayer
+from src.core.tilemap import Tilemap
+from src.core.utils import get_background
+from config import WIDTH, HEIGHT, FPS
+from src.interface.choose_player import ChoosePlayer
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 

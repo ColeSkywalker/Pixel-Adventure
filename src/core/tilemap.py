@@ -1,11 +1,10 @@
 import pytmx
 import pygame
 from os.path import join
-from src.Block import Block
-from pytmx.util_pygame import load_pygame
+from src.core.block import Block
 
 from config import HEIGHT, BLOCK_SIZE
-from src.fruits.Fruit import Fruit
+from src.fruits.fruit import Fruit
 
 class Tilemap:
     #assets/tiles/level_1.tmx
