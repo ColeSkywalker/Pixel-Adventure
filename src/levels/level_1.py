@@ -17,6 +17,10 @@ class level_1:
         # Carregar fundo
         self.background, self.bg_img = get_background("Pink.png")
 
+        pygame.mixer.music.load("assets/Songs/level_1_theme.wav")
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)
+
         # Jogador
         self.player = Player(500, HEIGHT - BLOCK_SIZE - 50, 50, 50)
 
@@ -80,3 +84,5 @@ class level_1:
             self.offset_x = max(0, min(self.offset_x, self.max_offset_x))
 
             self.draw()
+        pygame.mixer.music.stop()
+        pygame.quit()

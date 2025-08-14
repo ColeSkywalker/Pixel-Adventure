@@ -57,7 +57,6 @@
   <object id="71" name="Melon" type="Fruit" x="1000" y="74.6667"/>
   <object id="72" name="Melon" type="Fruit" x="1000" y="50.6667"/>
   <object id="73" name="Melon" type="Fruit" x="479.333" y="306.667"/>
-  <object id="75" name="Melon" type="Fruit" x="879.333" y="82.6667"/>
   <object id="76" name="Melon" type="Fruit" x="879.333" y="58.6667"/>
   <object id="77" name="Melon" type="Fruit" x="879.333" y="34.6667"/>
  </objectgroup>

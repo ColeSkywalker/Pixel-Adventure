@@ -10,6 +10,7 @@ class Player(SpriteEntity):
 
     def __init__(self, x ,y, width, height):
         super().__init__(x ,y, width, height)
+        self.sprite = None
         self.fruits = 0
         self.rect = pygame.Rect(x,y,width,height)
         self.x_vel = 0
@@ -88,6 +89,7 @@ class Player(SpriteEntity):
 
         self.fall_count += 1
         self.update_sprite()
+        print(f"x: {self.rect.x}, y: {self.rect.y}, y_vel: {self.y_vel}, jump_count: {self.jump_count}")
 
     def landed(self):
         self.fall_count = 0
@@ -101,11 +103,11 @@ class Player(SpriteEntity):
     def take_hit(self):
         self.hit = True
         self.hit_count = 0
-        
+
     def take_fruit(self, fruit):
         self.catch_fruit = True
         self.fruits += fruit
-        
+
     def update_sprite(self):
         sprite_sheet = "Idle"
         if self.hit:
@@ -121,6 +123,10 @@ class Player(SpriteEntity):
             sprite_sheet = "Run"
 
         sprite_sheet_name = sprite_sheet + "_" + self.direction
+
+        if sprite_sheet_name not in self.sprites:
+            sprite_sheet_name = "Idle_" + self.direction
+
         sprites = self.sprites[sprite_sheet_name]
         sprite_index = (self.animation_count // ANIMATION_DELAY) % len(sprites)
         self.sprite = sprites[sprite_index]
@@ -128,13 +134,14 @@ class Player(SpriteEntity):
         self.update()
 
     def update(self):
-        self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y))
+        x, y = self.rect.topleft
+        self.rect.size = self.sprite.get_size()
+        self.rect.topleft = (x, y)
         self.mask = pygame.mask.from_surface(self.sprite)
+
 
     def draw(self, win, offset_x):
         win.blit(self.sprite, (self.rect.x - offset_x, self.rect.y))
-
-
 
     def handle_vertical_collision(self , objects, dy):
         collided_objects = []
@@ -160,6 +167,7 @@ class Player(SpriteEntity):
                 break
         self.move(-dx, 0)
         self.update()
+
         return collided_object
 
     def handle_move(self, objects):
@@ -176,11 +184,17 @@ class Player(SpriteEntity):
 
         if keys[pygame.K_SPACE]:
             if not self.jump_key_pressed and self.jump_count < 2:
-                self.jump()
-                self.jump_key_pressed = True
+                if self.jump_count == 1:
+                    if self.y_vel < 0:
+                        self.jump()
+                        self.jump_key_pressed = True
+                else:
+                    self.jump()
+                    self.jump_key_pressed = True
         else:
             self.jump_key_pressed = False
 
         self.handle_vertical_collision(objects, self.y_vel)
+
 
 

@@ -16,7 +16,7 @@ class Tilemap:
         self.load_map()
 
     def load_map(self):
-        vertical_offset = HEIGHT - (self.tmx_data.height * BLOCK_SIZE)  # alinhando ao chão
+        vertical_offset = HEIGHT - (self.tmx_data.height * BLOCK_SIZE)
         scale = BLOCK_SIZE / self.tmx_data.tilewidth
 
         for layer in self.tmx_data.visible_layers:
@@ -37,10 +37,8 @@ class Tilemap:
             if obj.type == "Fruit":
                 fruit_x = (obj.x * scale) - 32
                 fruit_y = (obj.y * scale + vertical_offset) - 32
-
                 self.fruits.append(Fruit(obj.name, fruit_x, fruit_y, 32, 32))
 
-                print(obj.name, "x:", obj.x, "y:", obj.y, "id: ", obj.id)
 
     def get_tiles(self):
             return self.tiles
