@@ -25,7 +25,7 @@ class level_1:
         # Tilemap
         self.tilemap = Tilemap("level_1.tmx")
         self.tile_objects = self.tilemap.get_tiles()
-        self.fruits = self.tilemap.get_fruits()
+        self.fruits = pygame.sprite.Group(*self.tilemap.get_fruits())
 
         self.objects = [*self.tile_objects]
 
@@ -42,7 +42,7 @@ class level_1:
             if tile.rect.right >= self.offset_x and tile.rect.left <= self.offset_x + WIDTH:
                 self.window.blit(tile.image, (tile.rect.x - self.offset_x, tile.rect.y))
 
-        for fruit in self.fruits:
+        for fruit in self.fruits.sprites():
             if fruit.rect.right >= self.offset_x and fruit.rect.left <= self.offset_x + WIDTH:
                 fruit.draw(self.window, self.offset_x)
 
@@ -62,10 +62,10 @@ class level_1:
                     run = False
                     break
 
-            for fruit in self.fruits:
+            for fruit in self.fruits.sprites():
                 fruit.update_sprite()
 
-            self.player.loop(FPS, self.objects)
+            self.player.loop(FPS, self.objects, self.fruits)
 
             if (
                 (self.player.rect.right - self.offset_x >= WIDTH - SCROLL_AREA_WIDTH and self.player.x_vel > 0) or

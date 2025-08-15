@@ -7,7 +7,6 @@ from config import *
 
 class Player(SpriteEntity):
 
-
     def __init__(self, x ,y, width, height):
         super().__init__(x ,y, width, height)
         #self.sprite = None
@@ -115,7 +114,7 @@ class Player(SpriteEntity):
             self.fall_count = 0
             self.y_vel = -GRAVITY * 8
 
-    def loop(self, fps, objects):
+    def loop(self, fps, objects, fruits):
         self.update_sprite()
 
         self.handle_move(objects)
@@ -124,6 +123,7 @@ class Player(SpriteEntity):
         self.move(self.x_vel, self.y_vel)
 
         self.handle_vertical_collision(objects, self.y_vel)
+        self.taking_fruits(fruits)
 
         if self.hit:
             self.hit_count += 1
@@ -150,9 +150,13 @@ class Player(SpriteEntity):
         self.hit = True
         self.hit_count = 0
 
-    def take_fruit(self, fruit):
-        self.catch_fruit = True
-        self.fruits += fruit
+    def taking_fruits(self, fruits):
+        for fruit in fruits:
+            if pygame.sprite.collide_mask(self, fruit):
+                pygame.mixer.Sound("assets/Songs/take_fruit_sound_effect.wav").play()
+                self.fruits += 1
+                fruit.kill()
+                break
 
     def handle_vertical_collision(self , objects, dy):
         collided_objects = []
