@@ -10,16 +10,18 @@ class Player(SpriteEntity):
 
     def __init__(self, x ,y, width, height):
         super().__init__(x ,y, width, height)
-        self.sprite = None
+        #self.sprite = None
         self.fruits = 0
         self.rect = pygame.Rect(x,y,width,height)
         self.x_vel = 0
         self.y_vel = 0
-        self.mask = None
+        #self.mask = None
         self.direction = "left"
         self.animation_count = 0
         self.fall_count = 0
         self.sprites = self.load_sprite_sheets("Main Characters", "Pink Man", 32, 32, True)
+        self.sprite = self.sprites["Idle_right"][0]
+        self.mask = pygame.mask.from_surface(self.sprite)
         self.jump_count = 0
         self.jump_key_pressed = False
         self.hit = False
@@ -53,61 +55,6 @@ class Player(SpriteEntity):
 
         return all_sprites
 
-    # Movimentacao
-    def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
-
-    def move_left(self, vel):
-        self.x_vel = -vel
-        if self.direction != "left":
-            self.direction = "left"
-            self.animation_count = 0
-
-    def move_right(self, vel):
-        self.x_vel = vel
-        if self.direction != "right":
-            self.direction = "right"
-            self.animation_count = 0
-
-    def jump(self):
-        self.y_vel = -GRAVITY * 8
-        self.animation_count = 0
-        self.jump_count += 1
-        if self.jump_count == 1:
-            self.fall_count = 0
-
-    def loop(self, fps):
-        self.y_vel += min(1,(self.fall_count / fps) * GRAVITY)
-        self.move(self.x_vel, self.y_vel)
-
-        if self.hit:
-            self.hit_count += 1
-        if self.hit_count > FPS * 2:
-            self.hit = False
-            self.hit_count = 0
-
-        self.fall_count += 1
-        self.update_sprite()
-        print(f"x: {self.rect.x}, y: {self.rect.y}, y_vel: {self.y_vel}, jump_count: {self.jump_count}")
-
-    def landed(self):
-        self.fall_count = 0
-        self.y_vel = 0
-        self.jump_count = 0
-
-    def hit_head(self):
-        self.hit_count = 0
-        self.y_vel *= -1
-
-    def take_hit(self):
-        self.hit = True
-        self.hit_count = 0
-
-    def take_fruit(self, fruit):
-        self.catch_fruit = True
-        self.fruits += fruit
-
     def update_sprite(self):
         sprite_sheet = "Idle"
         if self.hit:
@@ -139,9 +86,73 @@ class Player(SpriteEntity):
         self.rect.topleft = (x, y)
         self.mask = pygame.mask.from_surface(self.sprite)
 
-
     def draw(self, win, offset_x):
         win.blit(self.sprite, (self.rect.x - offset_x, self.rect.y))
+
+    # Player's mechanics
+
+    def move(self, dx, dy):
+        self.rect.x += dx
+        self.rect.y += dy
+
+    def move_left(self, vel):
+        self.x_vel = -vel
+        if self.direction != "left":
+            self.direction = "left"
+            self.animation_count = 0
+
+    def move_right(self, vel):
+        self.x_vel = vel
+        if self.direction != "right":
+            self.direction = "right"
+            self.animation_count = 0
+
+    def jump(self):
+        self.y_vel = -GRAVITY * 8
+        self.animation_count = 0
+        self.jump_count += 1
+        if self.jump_count == 1:
+            self.fall_count = 0
+            self.y_vel = -GRAVITY * 8
+
+    def loop(self, fps, objects):
+        self.update_sprite()
+
+        self.handle_move(objects)
+
+        self.y_vel += min(1,(self.fall_count / fps) * GRAVITY)
+        self.move(self.x_vel, self.y_vel)
+
+        self.handle_vertical_collision(objects, self.y_vel)
+
+        if self.hit:
+            self.hit_count += 1
+        if self.hit_count > FPS * 2:
+            self.hit = False
+            self.hit_count = 0
+
+        self.fall_count += 1
+        self.update_sprite()
+
+
+        print(f"x: {self.rect.x}, y: {self.rect.y}, y_vel: {self.y_vel}, jump_count: {self.jump_count}")
+
+    def landed(self):
+        self.fall_count = 0
+        self.y_vel = 0
+        self.jump_count = 0
+
+    def hit_head(self):
+        self.hit_count = 0
+        self.y_vel *= -1
+
+    def take_hit(self):
+        self.hit = True
+        self.hit_count = 0
+
+    def take_fruit(self, fruit):
+        self.catch_fruit = True
+        self.fruits += fruit
 
     def handle_vertical_collision(self , objects, dy):
         collided_objects = []
@@ -194,7 +205,7 @@ class Player(SpriteEntity):
         else:
             self.jump_key_pressed = False
 
-        self.handle_vertical_collision(objects, self.y_vel)
+        #self.handle_vertical_collision(objects, self.y_vel)
 
 
 

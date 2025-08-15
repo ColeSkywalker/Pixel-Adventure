@@ -11,11 +11,11 @@ pygame.display.set_caption("Platformer")
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
 if __name__ == "__main__":
-    menu = Menu(window)
-    menu.run()
-    pygame.quit()
-
-    #level = level_1(window)
-    #level.run()
+    #menu = Menu(window)
+    #menu.run()
     #pygame.quit()
+
+    level = level_1(window)
+    level.run()
+    pygame.quit()
 
