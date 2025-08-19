@@ -120,17 +120,7 @@ class Chicken(Enemies):
             elif dx < 0 and not collide_left:
                 self.move_left(CHICKEN_VEL)
         else:
-            self.is_patrolling = True
-
-            # Checa por colisão na direção atual
-            patrol_velocity = CHICKEN_VEL * self.patrol_direction
-
-            # Se a colisão ocorrer no próximo passo, inverte a direção
-            if self.collide(objects, patrol_velocity):
-                self.patrol_direction *= -1
-
-            # Move o frango na nova direção de patrulha
-            if self.patrol_direction == -1:
+            if self.patrol_direction == -1 and not collide_left:
                 self.move_left(CHICKEN_VEL)
             elif collide_left:
                 self.patrol_direction = 1
