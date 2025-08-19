@@ -136,4 +136,6 @@ class Chicken(Enemies):
                 self.patrol_direction = 1
             elif self.patrol_direction == 1 and not collide_right:
                 self.move_right(CHICKEN_VEL)
+            elif collide_right:
+                self.patrol_direction = -1
 
