@@ -132,6 +132,8 @@ class Chicken(Enemies):
             # Move o frango na nova direção de patrulha
             if self.patrol_direction == -1:
                 self.move_left(CHICKEN_VEL)
-            elif self.patrol_direction == 1:
+            elif collide_left:
+                self.patrol_direction = 1
+            elif self.patrol_direction == 1 and not collide_right:
                 self.move_right(CHICKEN_VEL)
 
