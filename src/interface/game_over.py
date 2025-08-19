@@ -4,10 +4,14 @@ from src.core.utils import get_background
 from config import WIDTH, HEIGHT, FPS
 
 
-class ChoosePlayer:
+class GameOver:
     def __init__(self, window):
         self.window = window
-        self.background, self.bg_img = get_background("Purple.png")
+        self.background, self.bg_img = get_background("Gray.png")
+
+        pygame.mixer.music.load("assets/Songs/game_over_theme.wav")
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(loops=0)
 
         # Char to buttons
         self.letter_sheet = pygame.image.load("assets/Menu/Text/Text_white.png").convert_alpha()
@@ -27,23 +31,14 @@ class ChoosePlayer:
             self.letters[char] = self.letter_sheet.subsurface((x, y, self.letter_width, self.letter_height))
 
         self.buttons = {}
-        self.button_scales = {"Select": 5, "Back": 5}
+        self.button_scales = {"Continue": 5, "Back": 5}
 
-        # Arrow
-        self.arrow_left_img = pygame.image.load("assets/Menu/Buttons/Back.png").convert_alpha()
-        self.arrow_right_img = pygame.transform.flip(self.arrow_left_img, True, False)
-        self.arrow_base_size = 75
-        self.arrow_scales = {"left": self.arrow_base_size, "right": self.arrow_base_size}
+        self.restart_button = pygame.image.load("assets/Menu/Buttons/Restart.png").convert_alpha()
+        self.restart_button_size = 75
 
-        # Characters
-        self.player_folders = ["Pink Man", "Ninja Frog", "Mask Dude", "Virtual Guy"]
-        self.players = []
-        for folder in self.player_folders:
-            p = Player(WIDTH // 2, HEIGHT // 2, 50, 50)
-            p.sprites = p.load_sprite_sheets("Main Characters", folder, 32, 32, True)
-            self.players.append(p)
+        self.play_button =  pygame.image.load("assets/Menu/Buttons/Play.png").convert_alpha()
+        self.play_button_size = 75
 
-        self.current_index = 0
 
     def draw_text(self, text, y, spacing=2, scale=5):
         total_width = 0
@@ -82,35 +77,9 @@ class ChoosePlayer:
 
         mouse_pos = pygame.mouse.get_pos()
 
-        self.draw_text("Choose your character", y=100, spacing=4, scale=7)
+        self.draw_text("Game Over", y=300, spacing=4, scale=7)
 
-        player_x = 535
-        player_y = 300
-        current_player = self.players[self.current_index]
-        current_player.update_sprite()
-
-        scale = 3
-        sprite_scaled = pygame.transform.scale(
-            current_player.sprite,
-            (current_player.sprite.get_width() * scale,
-             current_player.sprite.get_height() * scale)
-        )
-
-        draw_rect = pygame.Rect(player_x, player_y,
-                                current_player.sprite.get_width() * scale,
-                                current_player.sprite.get_height() * scale)
-        self.window.blit(sprite_scaled, draw_rect.topleft)
-
-        arrow_left_scaled = pygame.transform.scale(self.arrow_left_img,
-                                                   (int(self.arrow_scales["left"]), int(self.arrow_scales["left"])))
-        arrow_right_scaled = pygame.transform.scale(self.arrow_right_img,
-                                                    (int(self.arrow_scales["right"]), int(self.arrow_scales["right"])))
-        self.arrow_left_rect = arrow_left_scaled.get_rect(center=(player_x - 90, player_y + 100))
-        self.arrow_right_rect = arrow_right_scaled.get_rect(center=(player_x + 270, player_y + 100))
-        self.window.blit(arrow_left_scaled, self.arrow_left_rect)
-        self.window.blit(arrow_right_scaled, self.arrow_right_rect)
-
-        for name, y_pos in [("Select", HEIGHT - 150), ("Back", HEIGHT - 80)]:
+        for name, y_pos in [("Continue", HEIGHT - 150), ("Back", HEIGHT - 80)]:
             target_scale = 6 if self.buttons.get(name) and self.buttons[name].collidepoint(mouse_pos) else 5
             self.button_scales[name] += (target_scale - self.button_scales[name]) * 0.1
             self.buttons[name] = self.draw_text(name, y=y_pos, spacing=4, scale=self.button_scales[name])
@@ -122,23 +91,16 @@ class ChoosePlayer:
         clock = pygame.time.Clock()
         while run:
             mouse_pos = pygame.mouse.get_pos()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    if self.arrow_left_rect.collidepoint(mouse_pos):
-                        self.current_index = (self.current_index - 1) % len(self.players)
-                    elif self.arrow_right_rect.collidepoint(mouse_pos):
-                        self.current_index = (self.current_index + 1) % len(self.players)
-
-                    elif self.buttons["Select"] and self.buttons["Select"].collidepoint(mouse_pos):
-                        print(f"Personagem selecionado: {self.player_folders[self.current_index]}")
+                    if self.buttons["Continue"] and self.buttons["Continue"].collidepoint(mouse_pos):
+                        print(f"Continuar a jogar")
                     elif self.buttons["Back"] and self.buttons["Back"].collidepoint(mouse_pos):
                         from src.interface.menu import Menu
                         menu = Menu(self.window)
                         menu.run()
-
             self.draw()
             clock.tick(FPS)
 

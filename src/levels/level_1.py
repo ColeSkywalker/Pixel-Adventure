@@ -25,8 +25,11 @@ class level_1:
         # Tilemap
         self.tilemap = Tilemap("level_1.tmx")
         self.tile_objects = self.tilemap.get_tiles()
-        self.fruits = pygame.sprite.Group(*self.tilemap.get_fruits())
 
+
+
+        self.fruits = pygame.sprite.Group(*self.tilemap.get_fruits())
+        self.enemies = pygame.sprite.Group(*self.tilemap.get_enemies())
         self.objects = [*self.tile_objects]
 
         self.offset_x = 0
@@ -46,6 +49,10 @@ class level_1:
             if fruit.rect.right >= self.offset_x and fruit.rect.left <= self.offset_x + WIDTH:
                 fruit.draw(self.window, self.offset_x)
 
+        for enemies in self.enemies.sprites():
+            if enemies.rect.right >= self.offset_x and enemies.rect.left <= self.offset_x + WIDTH:
+                enemies.draw(self.window, self.offset_x)
+
         self.player.draw(self.window, self.offset_x)
 
         for obj in self.objects:
@@ -64,6 +71,9 @@ class level_1:
 
             for fruit in self.fruits.sprites():
                 fruit.update_sprite()
+
+            for enemy in self.enemies.sprites():
+                enemy.loop(self.player, self.objects)
 
             self.player.loop(FPS, self.objects, self.fruits)
 

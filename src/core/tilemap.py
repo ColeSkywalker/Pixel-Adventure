@@ -4,14 +4,17 @@ from os.path import join
 from src.core.block import Block
 
 from config import HEIGHT, BLOCK_SIZE
+from src.enemies.enemies import Enemies
+from src.enemies.enemies_factory import EnemiesFactory
 from src.fruits.fruit import Fruit
 
 class Tilemap:
-    #assets/tiles/level_1.tmx
+    #assets/Tiles/level_1.tmx
     def __init__(self, filename):
-        self.tmx_data = pytmx.load_pygame(join("assets", "tiles", filename))
+        self.tmx_data = pytmx.load_pygame(join("assets", "Tiles", filename))
         self.tiles = []
         self.fruits = []
+        self.enemies = []
         self.load_map()
 
     def load_map(self):
@@ -38,6 +41,15 @@ class Tilemap:
                 fruit_y = (obj.y * scale + vertical_offset) - 32
                 self.fruits.append(Fruit(obj.name, fruit_x, fruit_y, 32, 32))
 
+            if obj.type == "Enemies":
+                enemie_x = (obj.x * scale) - 32
+                enemie_y = (obj.y * scale + vertical_offset) - 32
+                factory = EnemiesFactory()
+                enemy = factory.create(obj.name, enemie_x, enemie_y)
+                while not any(pygame.sprite.collide_mask(enemy, tile) for tile in self.tiles):
+                    enemy.rect.y += 1
+                enemy.rect.y -= 1
+                self.enemies.append(enemy)
 
     def get_tiles(self):
             return self.tiles
@@ -47,4 +59,7 @@ class Tilemap:
 
     def get_width(self):
         return self.tmx_data.width * BLOCK_SIZE
+
+    def get_enemies(self):
+        return self.enemies
 

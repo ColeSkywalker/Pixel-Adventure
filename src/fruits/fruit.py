@@ -25,7 +25,6 @@ class Fruit(Object):
             frames.append(pygame.transform.scale2x(surface))
         return frames
 
-
     def update_sprite(self):
         sprite_index = (self.animation_count // ANIMATION_DELAY) % len(self.sprites)
         self.sprite = self.sprites[sprite_index]

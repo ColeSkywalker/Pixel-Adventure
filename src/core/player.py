@@ -25,7 +25,7 @@ class Player(SpriteEntity):
         self.jump_key_pressed = False
         self.hit = False
         self.hit_count = 0
-        self.catch_fruit = False
+        self.life = 3
 
     # Sprites
     def flip(self, sprites):
@@ -134,8 +134,7 @@ class Player(SpriteEntity):
         self.fall_count += 1
         self.update_sprite()
 
-
-        print(f"x: {self.rect.x}, y: {self.rect.y}, y_vel: {self.y_vel}, jump_count: {self.jump_count}")
+       # print(f"x: {self.rect.x}, y: {self.rect.y}, y_vel: {self.y_vel}, jump_count: {self.jump_count}")
 
     def landed(self):
         self.fall_count = 0
@@ -149,6 +148,7 @@ class Player(SpriteEntity):
     def take_hit(self):
         self.hit = True
         self.hit_count = 0
+        self.life -= 1
 
     def taking_fruits(self, fruits):
         for fruit in fruits:
@@ -156,6 +156,12 @@ class Player(SpriteEntity):
                 pygame.mixer.Sound("assets/Songs/take_fruit_sound_effect.wav").play()
                 self.fruits += 1
                 fruit.kill()
+                break
+
+    def damage_from_enemies_or_trap(self, enemies):
+        for enemie in enemies:
+            if pygame.sprite.collide_mask(self, enemie):
+                self.take_hit()
                 break
 
     def handle_vertical_collision(self , objects, dy):
