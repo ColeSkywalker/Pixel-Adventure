@@ -123,13 +123,13 @@ class Chicken(Enemies):
 
 
     def update_ai(self, player, objects):
-        vision_range = 800
+        vision_range = 500
         dx = player.rect.centerx - self.rect.centerx
-        dy = player.rect.centery - self.rect.centery
+        dy = player.rect.bottom - self.rect.bottom
         collide_left = self.collide(objects, -CHICKEN_VEL * 2)
         collide_right = self.collide(objects, CHICKEN_VEL * 2)
 
-        if abs(dx) < vision_range and abs(dy) < 50:
+        if abs(dx) < vision_range and abs(dy) < 200:
             if dx > 0 and not collide_right:
                 self.move_right(CHICKEN_VEL)
             elif dx < 0 and not collide_left:
