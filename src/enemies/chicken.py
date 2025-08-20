@@ -73,25 +73,37 @@ class Chicken(Enemies):
         return True
 
     def loop(self, player, objects):
-        self.y_vel += GRAVITY
-        self.move(self.x_vel, self.y_vel)
-        self.handle_vertical_collision(objects, self.y_vel)
         self.update_sprite()
+
         self.update_ai(player, objects)
 
-    def handle_vertical_collision(self, objects, dy):
-        collided_objects = []
+        self.y_vel += GRAVITY
+
+        # X
+        self.move(self.x_vel, 0)
+        self.handle_horizontal_collision(objects)
+        # Y
+        self.handle_vertical_collision(objects)
+
+        self.update_sprite()
+
+    def handle_horizontal_collision(self, objects):
         for obj in objects:
-            if hasattr(obj, 'mask') and hasattr(self, 'mask'):
-                if pygame.sprite.collide_mask(self, obj):
-                    if dy > 0:  # Moving down
-                        self.rect.bottom = obj.rect.top
-                        self.y_vel = 0  # Landed
-                    elif dy < 0:  # Moving up
-                        self.rect.top = obj.rect.bottom
-                        self.y_vel = 0  # Hit ceiling
-                    collided_objects.append(obj)
-        return collided_objects
+            if pygame.sprite.collide_mask(self, obj):
+                if self.x_vel > 0:  # right
+                    self.rect.right = obj.rect.left
+                elif self.x_vel < 0:  # left
+                    self.rect.left = obj.rect.right
+                self.x_vel = 0
+
+    def handle_vertical_collision(self, objects):
+        for obj in objects:
+            if pygame.sprite.collide_mask(self, obj):
+                if self.y_vel > 0:
+                    self.rect.bottom = obj.rect.top
+                elif self.y_vel < 0:
+                    self.rect.top = obj.rect.bottom
+                self.y_vel = 0
 
     def collide(self, objects, dx):
         self.move(dx, 0)
@@ -106,26 +118,33 @@ class Chicken(Enemies):
 
         return collided_object
 
+    def stop(self):
+        self.move(0, 0)
+
+
     def update_ai(self, player, objects):
-        vision_range = 500
+        vision_range = 800
         dx = player.rect.centerx - self.rect.centerx
         dy = player.rect.centery - self.rect.centery
         collide_left = self.collide(objects, -CHICKEN_VEL * 2)
         collide_right = self.collide(objects, CHICKEN_VEL * 2)
 
         if abs(dx) < vision_range and abs(dy) < 50:
-            self.x_vel = 0
             if dx > 0 and not collide_right:
                 self.move_right(CHICKEN_VEL)
             elif dx < 0 and not collide_left:
                 self.move_left(CHICKEN_VEL)
         else:
-            if self.patrol_direction == -1 and not collide_left:
-                self.move_left(CHICKEN_VEL)
-            elif collide_left:
-                self.patrol_direction = 1
-            elif self.patrol_direction == 1 and not collide_right:
-                self.move_right(CHICKEN_VEL)
-            elif collide_right:
-                self.patrol_direction = -1
+        # Patrolling
+            if self.patrol_direction == -1:
+                if collide_left:
+                    self.patrol_direction = 1
+                else:
+                    self.move_left(CHICKEN_VEL // 2)
+            else:
+                if collide_right:
+                    self.patrol_direction = -1
+                else:
+                    self.move_right(CHICKEN_VEL // 2)
+
 
