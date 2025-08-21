@@ -29,7 +29,7 @@ class Menu:
         self.tile_objects = self.tilemap.get_tiles()
         self.offset_x = 0
 
-        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ    0123456789"
         self.letters = {}
         for index, char in enumerate(chars):
             col = index % self.cols

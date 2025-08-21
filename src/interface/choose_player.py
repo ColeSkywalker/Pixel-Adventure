@@ -1,4 +1,6 @@
 import pygame
+
+from src.core.game_state import GameState
 from src.core.player import Player
 from src.core.utils import get_background
 from config import WIDTH, HEIGHT, FPS
@@ -133,7 +135,10 @@ class ChoosePlayer:
                         self.current_index = (self.current_index + 1) % len(self.players)
 
                     elif self.buttons["Select"] and self.buttons["Select"].collidepoint(mouse_pos):
-                        print(f"Personagem selecionado: {self.player_folders[self.current_index]}")
+                        GameState.chosen_character = self.player_folders[self.current_index]
+                        print(f"Character: {GameState.chosen_character}")
+                        from src.interface.level_select import LevelSelect
+                        LevelSelect(self.window).run()
                     elif self.buttons["Back"] and self.buttons["Back"].collidepoint(mouse_pos):
                         from src.interface.menu import Menu
                         menu = Menu(self.window)

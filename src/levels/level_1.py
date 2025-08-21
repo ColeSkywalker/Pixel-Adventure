@@ -9,7 +9,7 @@ pygame.init()
 pygame.display.set_caption("Platformer")
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
-class level_1:
+class Level_1:
     def __init__(self, window):
         self.window = window
         self.clock = pygame.time.Clock()
@@ -52,10 +52,10 @@ class level_1:
             if enemies.rect.right >= self.offset_x and enemies.rect.left <= self.offset_x + WIDTH:
                 enemies.draw(self.window, self.offset_x)
 
-        self.player.draw(self.window, self.offset_x)
-
         for obj in self.objects:
             obj.draw(self.window, self.offset_x)
+
+        self.player.draw(self.window, self.offset_x)
 
         pygame.display.update()
 

@@ -2,6 +2,7 @@ import pygame
 from src.core.player import Player
 from src.core.utils import get_background
 from config import WIDTH, HEIGHT, FPS
+from src.levels.level_1 import Level_1
 
 
 class GameOver:
@@ -96,7 +97,8 @@ class GameOver:
                     run = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if self.buttons["Continue"] and self.buttons["Continue"].collidepoint(mouse_pos):
-                        print(f"Continuar a jogar")
+                        level = Level_1(self.window)
+                        level.run()
                     elif self.buttons["Back"] and self.buttons["Back"].collidepoint(mouse_pos):
                         from src.interface.menu import Menu
                         menu = Menu(self.window)

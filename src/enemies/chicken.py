@@ -128,6 +128,9 @@ class Chicken(Enemies):
         return collided_object
 
     def update_ai(self, player, objects):
+        if player.is_dead:
+            return
+
         collide_left = self.collide(objects, -CHICKEN_VEL * 2)
         collide_right = self.collide(objects, CHICKEN_VEL * 2)
 

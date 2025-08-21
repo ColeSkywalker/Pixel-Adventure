@@ -2,6 +2,7 @@ import pygame.sprite
 from os import listdir
 from os.path import isfile, join
 
+from src.core.game_state import GameState
 from src.core.sprite_entity import SpriteEntity
 from config import *
 
@@ -17,7 +18,7 @@ class Player(SpriteEntity):
         self.direction = "left"
         self.animation_count = 0
         self.fall_count = 0
-        self.sprites = self.load_sprite_sheets("Main Characters", "Pink Man", 32, 32, True)
+        self.sprites = self.load_sprite_sheets("Main Characters", GameState.chosen_character, 32, 32, True)
         self.sprite = self.sprites["Idle_right"][0]
         self.mask = pygame.mask.from_surface(self.sprite)
         self.jump_count = 0
@@ -140,14 +141,13 @@ class Player(SpriteEntity):
     def loop_death(self):
         if not hasattr(self, 'death_init'):
             self.death_init = True
-            self.x_vel = -6 if self.direction == "right" else 6
-            self.y_vel = -GRAVITY * 6
+            self.x_vel = 0
+            self.y_vel = -GRAVITY * 12
 
-        self.y_vel += GRAVITY * 1.2
+        self.y_vel += GRAVITY
         self.move(self.x_vel, self.y_vel)
         self.update_sprite()
-
-        if self.rect.top > HEIGHT + 100:
+        if self.rect.top > HEIGHT + 500:
             self.finished_death = True
 
     def landed(self):
@@ -159,11 +159,11 @@ class Player(SpriteEntity):
         self.hit_count = 0
         self.y_vel *= -1
 
-    def die(self, hit_from_right=True):
+    def die(self):
         self.is_dead = True
         self.hit = True
-        self.x_vel = 6 if hit_from_right else -6
-        self.y_vel = -GRAVITY * 6
+        self.x_vel = 0
+        self.y_vel = -GRAVITY * 12
 
     def taking_fruits(self, fruits):
         for fruit in fruits:
@@ -184,6 +184,7 @@ class Player(SpriteEntity):
                     enemy.die()
                     self.jump()
                 else:
+                    pygame.mixer.Sound("assets/Songs/player_died_sound_effect.wav").play()
                     self.die()
 
     def handle_vertical_collision(self , objects, dy):
