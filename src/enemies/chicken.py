@@ -1,6 +1,6 @@
 import pygame
 
-from config import ANIMATION_DELAY, CHICKEN_VEL, GRAVITY
+from config import ANIMATION_DELAY, CHICKEN_VEL, GRAVITY, FPS
 from src.enemies.enemies import Enemies
 
 
@@ -18,10 +18,12 @@ class Chicken(Enemies):
         self.hit = False
         self.is_patrolling = True
         self.patrol_direction = -1
+        self.is_dead = False
+        self.death_timer = 0
 
     def update_sprite(self):
         sprite_sheet = "Idle"
-        if self.hit:
+        if self.hit or self.is_dead:
             sprite_sheet = "Hit"
         elif self.x_vel != 0:
             sprite_sheet = "Run"
@@ -41,6 +43,12 @@ class Chicken(Enemies):
         self.sprite = sprites[sprite_index]
         self.animation_count += 1
         self.update()
+
+    def die(self):
+        self.x_vel = 0
+        self.hit = True
+        self.is_dead = True
+        self.death_timer = FPS // 2
 
     def update(self):
         x, y = self.rect.topleft
@@ -69,9 +77,6 @@ class Chicken(Enemies):
             self.direction = "right"
             self.animation_count = 0
 
-    def get_hitted(self):
-        return True
-
     def loop(self, player, objects):
         self.update_sprite()
 
@@ -85,6 +90,10 @@ class Chicken(Enemies):
         # Y
         self.handle_vertical_collision(objects)
 
+        if self.is_dead:
+            self.death_timer -= 1
+            if self.death_timer <= 0:
+                return "remove"
         self.update_sprite()
 
     def handle_horizontal_collision(self, objects):
@@ -118,18 +127,38 @@ class Chicken(Enemies):
 
         return collided_object
 
-    def stop(self):
-        self.move(0, 0)
-
-
     def update_ai(self, player, objects):
-        vision_range = 500
-        dx = player.rect.centerx - self.rect.centerx
-        dy = player.rect.bottom - self.rect.bottom
         collide_left = self.collide(objects, -CHICKEN_VEL * 2)
         collide_right = self.collide(objects, CHICKEN_VEL * 2)
 
-        if abs(dx) < vision_range and abs(dy) < 200:
+        if self.is_dead:
+            self.x_vel = 0
+            return
+
+        player_on_top = (
+                pygame.sprite.collide_mask(self, player) and
+                player.y_vel > 0 and
+                player.rect.bottom <= self.rect.top + 5
+        )
+        if player_on_top:
+
+            self.x_vel = 0
+            if self.patrol_direction == -1:
+                if collide_left:
+                    self.patrol_direction = 1
+                else:
+                    self.move_left(CHICKEN_VEL // 2)
+            else:
+                if collide_right:
+                    self.patrol_direction = -1
+                else:
+                    self.move_right(CHICKEN_VEL // 2)
+            return
+        vision_range = 400
+        dx = player.rect.centerx - self.rect.centerx
+        dy = player.rect.bottom - self.rect.bottom
+
+        if abs(dx) < vision_range and abs(dy) < 150:
             if dx > 0 and not collide_right:
                 self.move_right(CHICKEN_VEL)
             elif dx < 0 and not collide_left:

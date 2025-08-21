@@ -9,12 +9,11 @@ class Player(SpriteEntity):
 
     def __init__(self, x ,y, width, height):
         super().__init__(x ,y, width, height)
-        #self.sprite = None
+        self.finished_death = False
         self.fruits = 0
         self.rect = pygame.Rect(x,y,width,height)
         self.x_vel = 0
         self.y_vel = 0
-        #self.mask = None
         self.direction = "left"
         self.animation_count = 0
         self.fall_count = 0
@@ -25,7 +24,7 @@ class Player(SpriteEntity):
         self.jump_key_pressed = False
         self.hit = False
         self.hit_count = 0
-        self.life = 3
+        self.is_dead = False
 
     # Sprites
     def flip(self, sprites):
@@ -114,27 +113,42 @@ class Player(SpriteEntity):
             self.fall_count = 0
             self.y_vel = -GRAVITY * 8
 
-    def loop(self, fps, objects, fruits):
+    def loop(self, fps, objects, fruits, enemies):
+        if self.is_dead:
+            self.loop_death()
+        else:
+            self.loop_alive(fps, objects, fruits, enemies)
+
+    def loop_alive(self, fps, objects, fruits, enemies):
         self.update_sprite()
-
         self.handle_move(objects)
-
         self.y_vel += min(1,(self.fall_count / fps) * GRAVITY)
         self.move(self.x_vel, self.y_vel)
-
         self.handle_vertical_collision(objects, self.y_vel)
         self.taking_fruits(fruits)
+        self.check_enemy_collision(enemies)
 
         if self.hit:
             self.hit_count += 1
-        if self.hit_count > FPS * 2:
-            self.hit = False
-            self.hit_count = 0
+            if self.hit_count > FPS * 2:
+                self.hit = False
+                self.hit_count = 0
 
         self.fall_count += 1
         self.update_sprite()
 
-       # print(f"x: {self.rect.x}, y: {self.rect.y}, y_vel: {self.y_vel}, jump_count: {self.jump_count}")
+    def loop_death(self):
+        if not hasattr(self, 'death_init'):
+            self.death_init = True
+            self.x_vel = -6 if self.direction == "right" else 6
+            self.y_vel = -GRAVITY * 6
+
+        self.y_vel += GRAVITY * 1.2
+        self.move(self.x_vel, self.y_vel)
+        self.update_sprite()
+
+        if self.rect.top > HEIGHT + 100:
+            self.finished_death = True
 
     def landed(self):
         self.fall_count = 0
@@ -145,10 +159,11 @@ class Player(SpriteEntity):
         self.hit_count = 0
         self.y_vel *= -1
 
-    def take_hit(self):
+    def die(self, hit_from_right=True):
+        self.is_dead = True
         self.hit = True
-        self.hit_count = 0
-        self.life -= 1
+        self.x_vel = 6 if hit_from_right else -6
+        self.y_vel = -GRAVITY * 6
 
     def taking_fruits(self, fruits):
         for fruit in fruits:
@@ -158,11 +173,18 @@ class Player(SpriteEntity):
                 fruit.kill()
                 break
 
-    def damage_from_enemies_or_trap(self, enemies):
-        for enemie in enemies:
-            if pygame.sprite.collide_mask(self, enemie):
-                self.take_hit()
-                break
+    def check_enemy_collision(self, enemies):
+        for enemy in enemies:
+            if enemy.is_dead:
+                continue
+
+            if pygame.sprite.collide_mask(self, enemy):
+                if self.y_vel > 0 and (self.rect.bottom - self.y_vel) <= enemy.rect.top + 10:
+                    pygame.mixer.Sound("assets/Songs/kill_sound_effect.wav").play()
+                    enemy.die()
+                    self.jump()
+                else:
+                    self.die()
 
     def handle_vertical_collision(self , objects, dy):
         collided_objects = []
@@ -214,8 +236,6 @@ class Player(SpriteEntity):
                     self.jump_key_pressed = True
         else:
             self.jump_key_pressed = False
-
-        #self.handle_vertical_collision(objects, self.y_vel)
 
 
 

@@ -27,7 +27,6 @@ class level_1:
         self.tile_objects = self.tilemap.get_tiles()
 
 
-
         self.fruits = pygame.sprite.Group(*self.tilemap.get_fruits())
         self.enemies = pygame.sprite.Group(*self.tilemap.get_enemies())
         self.objects = [*self.tile_objects]
@@ -73,9 +72,12 @@ class level_1:
                 fruit.update_sprite()
 
             for enemy in self.enemies.sprites():
-                enemy.loop(self.player, self.objects)
+                result = enemy.loop(self.player, self.objects)
+                if result == "remove":
+                    self.enemies.remove(enemy)
 
-            self.player.loop(FPS, self.objects, self.fruits)
+            self.player.loop(FPS, self.objects, self.fruits, self.enemies)
+
 
             if (
                 (self.player.rect.right - self.offset_x >= WIDTH - SCROLL_AREA_WIDTH and self.player.x_vel > 0) or
@@ -84,6 +86,11 @@ class level_1:
                 self.offset_x += self.player.x_vel
 
             self.offset_x = max(0, min(self.offset_x, self.max_offset_x))
+
+            if getattr(self.player, 'finished_death', False):
+                from src.interface.game_over import GameOver
+                GameOver(self.window).run()
+                run = False
 
             self.draw()
         pygame.mixer.music.stop()

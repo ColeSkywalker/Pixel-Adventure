@@ -69,6 +69,6 @@
   <object id="94" name="Melon" type="Fruit" x="378" y="110"/>
  </objectgroup>
  <objectgroup id="6" name="Enemies">
-  <object id="78" name="Chicken" type="Enemies" x="752" y="301.334"/>
+  <object id="78" name="Chicken" type="Enemies" x="1217.33" y="297.334"/>
  </objectgroup>
 </map>
