@@ -139,9 +139,9 @@ class LevelSelect:
                             level_instance = Level_1(self.window)
                             level_instance.run()
                     if self.buttons["Back"] and self.buttons["Back"].collidepoint(mouse_pos):
-                        from src.interface.menu import Menu
-                        menu = Menu(self.window)
-                        menu.run()
+                        from src.interface.choose_player import ChoosePlayer
+                        choose_player = ChoosePlayer(self.window)
+                        choose_player.run()
 
             self.draw()
             clock.tick(FPS)

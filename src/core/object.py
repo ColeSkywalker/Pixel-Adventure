@@ -1,6 +1,4 @@
 import pygame.sprite
-
-
 import pygame
 
 class Object(pygame.sprite.Sprite):

@@ -1,21 +1,20 @@
 import pygame
 
-from src.core.tilemap import Tilemap
 from src.core.utils import get_background
 from config import WIDTH, HEIGHT, FPS
-from src.interface.choose_player import ChoosePlayer
+from src.levels.level_1 import Level_1
 
-window = pygame.display.set_mode((WIDTH, HEIGHT))
 
-class Menu:
+class Congratulations:
     def __init__(self, window):
         self.window = window
-        self.background, self.bg_img = get_background("Brown.png")
+        self.background, self.bg_img = get_background("Yellow.png")
 
-        pygame.mixer.music.load("assets/Songs/menu_theme.mp3")
+        pygame.mixer.music.load("assets/Songs/complete_level_sound.wav")
         pygame.mixer.music.set_volume(0.5)
-        pygame.mixer.music.play(-1)
+        pygame.mixer.music.play(loops=0)
 
+        # Char to buttons
         self.letter_sheet = pygame.image.load("assets/Menu/Text/Text_white.png").convert_alpha()
         self.cols = 10
         self.rows = 5
@@ -23,13 +22,7 @@ class Menu:
         self.sheet_height = 50
         self.letter_width = self.sheet_width // self.cols
         self.letter_height = self.sheet_height // self.rows
-
-        # Tilemap
-        self.tilemap = Tilemap("menu.tmx")
-        self.tile_objects = self.tilemap.get_tiles()
-        self.offset_x = 0
-
-        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ    0123456789.,:?!()+-"
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ    0123456789"
         self.letters = {}
         for index, char in enumerate(chars):
             col = index % self.cols
@@ -38,8 +31,16 @@ class Menu:
             y = row * self.letter_height
             self.letters[char] = self.letter_sheet.subsurface((x, y, self.letter_width, self.letter_height))
 
-        self.button_scales = {"Play": 5, "Exit": 5}
         self.buttons = {}
+        self.button_scales = {"Try again": 5, "Back": 5}
+
+        self.restart_button = pygame.image.load("assets/Menu/Buttons/Restart.png").convert_alpha()
+        self.restart_button_size = 75
+
+        self.play_button =  pygame.image.load("assets/Menu/Buttons/Play.png").convert_alpha()
+        self.play_button_size = 75
+
+
     def draw_text(self, text, y, spacing=2, scale=5):
         total_width = 0
         for letter in text.upper():
@@ -57,8 +58,7 @@ class Menu:
             elif letter in self.letters:
                 letter_img = self.letters[letter]
                 letter_img_scaled = pygame.transform.scale(
-                    letter_img,
-                    (int(self.letter_width * scale), int(self.letter_height * scale))
+                    letter_img, (int(self.letter_width * scale), int(self.letter_height * scale))
                 )
                 self.window.blit(letter_img_scaled, (x, y))
                 letter_positions.append((x, y, self.letter_width * scale, self.letter_height * scale))
@@ -78,38 +78,33 @@ class Menu:
 
         mouse_pos = pygame.mouse.get_pos()
 
-        # Tiles
-        for tile in self.tile_objects:
-            if tile.rect.right >= self.offset_x and tile.rect.left <= self.offset_x + WIDTH:
-                self.window.blit(tile.image, (tile.rect.x - self.offset_x, tile.rect.y))
+        self.draw_text("Level Complete!", y=300, spacing=4, scale=7)
 
-        # Buttons
-        for name, y_pos in [("Play", 300), ("Exit", 375)]:
-            rect = self.button_scales[name]  # escala atual
+        for name, y_pos in [("Try again", HEIGHT - 150), ("Back", HEIGHT - 80)]:
             target_scale = 6 if self.buttons.get(name) and self.buttons[name].collidepoint(mouse_pos) else 5
             self.button_scales[name] += (target_scale - self.button_scales[name]) * 0.1
             self.buttons[name] = self.draw_text(name, y=y_pos, spacing=4, scale=self.button_scales[name])
-        self.draw_text("Pixel Adventure", y=100, spacing=4, scale=8)
+
+        pygame.display.update()
 
     def run(self):
         run = True
         clock = pygame.time.Clock()
         while run:
-            clock.tick(FPS)
+            mouse_pos = pygame.mouse.get_pos()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if self.buttons["Play"] and self.buttons["Play"].collidepoint(mouse_pos):
-                        choose_char = ChoosePlayer(window)
-                        choose_char.run()
-                    elif self.buttons["Exit"] and self.buttons["Exit"].collidepoint(mouse_pos):
-                        run = False
-
+                    if self.buttons["Try again"] and self.buttons["Try again"].collidepoint(mouse_pos):
+                        level = Level_1(self.window)
+                        level.run()
+                    elif self.buttons["Back"] and self.buttons["Back"].collidepoint(mouse_pos):
+                        from src.interface.level_select import LevelSelect
+                        level = LevelSelect(self.window)
+                        level.run()
             self.draw()
-            pygame.display.update()
+            clock.tick(FPS)
 
         pygame.mixer.music.stop()
         pygame.quit()
-

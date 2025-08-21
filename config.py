@@ -1,3 +1,5 @@
+import pygame
+
 WIDTH, HEIGHT = 1280, 720
 FPS = 60
 PLAYER_VEL = 6
@@ -7,3 +9,4 @@ ANIMATION_DELAY = 3
 BLOCK_SIZE = 32
 SCROLL_AREA_WIDTH = 200
 CHICKEN_VEL = 8
+WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))

@@ -89,6 +89,19 @@ class Player(SpriteEntity):
         win.blit(self.sprite, (self.rect.x - offset_x, self.rect.y))
 
     # Player's mechanics
+    def taking_fruits(self, fruits):
+        for fruit in fruits:
+            if pygame.sprite.collide_mask(self, fruit):
+                pygame.mixer.Sound("assets/Songs/take_fruit_sound_effect.wav").play()
+                self.fruits += 1
+                fruit.kill()
+                break
+
+    def complete_level(self, endpoints):
+        for endpoint in endpoints:
+            if pygame.sprite.collide_mask(self, endpoint):
+                return True
+        return False
 
     def move(self, dx, dy):
         self.rect.x += dx
@@ -114,13 +127,22 @@ class Player(SpriteEntity):
             self.fall_count = 0
             self.y_vel = -GRAVITY * 8
 
-    def loop(self, fps, objects, fruits, enemies):
+    def landed(self):
+        self.fall_count = 0
+        self.y_vel = 0
+        self.jump_count = 0
+
+    def hit_head(self):
+        self.hit_count = 0
+        self.y_vel *= -1
+
+    def loop(self, fps, objects, fruits, enemies, endpoint):
         if self.is_dead:
             self.loop_death()
         else:
-            self.loop_alive(fps, objects, fruits, enemies)
+            self.loop_alive(fps, objects, fruits, enemies, endpoint)
 
-    def loop_alive(self, fps, objects, fruits, enemies):
+    def loop_alive(self, fps, objects, fruits, enemies, endpoint):
         self.update_sprite()
         self.handle_move(objects)
         self.y_vel += min(1,(self.fall_count / fps) * GRAVITY)
@@ -128,6 +150,10 @@ class Player(SpriteEntity):
         self.handle_vertical_collision(objects, self.y_vel)
         self.taking_fruits(fruits)
         self.check_enemy_collision(enemies)
+        self.complete_level(endpoint)
+
+        if self.rect.top > HEIGHT + 200:
+            self.die()
 
         if self.hit:
             self.hit_count += 1
@@ -150,28 +176,11 @@ class Player(SpriteEntity):
         if self.rect.top > HEIGHT + 500:
             self.finished_death = True
 
-    def landed(self):
-        self.fall_count = 0
-        self.y_vel = 0
-        self.jump_count = 0
-
-    def hit_head(self):
-        self.hit_count = 0
-        self.y_vel *= -1
-
     def die(self):
         self.is_dead = True
         self.hit = True
         self.x_vel = 0
         self.y_vel = -GRAVITY * 12
-
-    def taking_fruits(self, fruits):
-        for fruit in fruits:
-            if pygame.sprite.collide_mask(self, fruit):
-                pygame.mixer.Sound("assets/Songs/take_fruit_sound_effect.wav").play()
-                self.fruits += 1
-                fruit.kill()
-                break
 
     def check_enemy_collision(self, enemies):
         for enemy in enemies:

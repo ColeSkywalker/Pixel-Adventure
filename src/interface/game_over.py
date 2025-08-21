@@ -22,7 +22,7 @@ class GameOver:
         self.sheet_height = 50
         self.letter_width = self.sheet_width // self.cols
         self.letter_height = self.sheet_height // self.rows
-        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ    0123456789.,:?!()+-"
         self.letters = {}
         for index, char in enumerate(chars):
             col = index % self.cols

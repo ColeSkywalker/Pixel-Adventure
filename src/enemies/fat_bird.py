@@ -90,7 +90,7 @@ class FatBird(Enemies):
         return collided_object
 
     def update_ai(self, player, objects):
-        print("jfkdjsfl")
+        print("teste")
 
 
 

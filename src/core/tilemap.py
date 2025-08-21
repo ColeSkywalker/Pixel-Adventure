@@ -4,17 +4,17 @@ from os.path import join
 from src.core.block import Block
 
 from config import HEIGHT, BLOCK_SIZE
-from src.enemies.enemies import Enemies
+from src.core.endpoint import EndPoint
 from src.enemies.enemies_factory import EnemiesFactory
 from src.fruits.fruit import Fruit
 
 class Tilemap:
-    #assets/Tiles/level_1.tmx
     def __init__(self, filename):
         self.tmx_data = pytmx.load_pygame(join("assets", "Tiles", filename))
         self.tiles = []
         self.fruits = []
         self.enemies = []
+        self.endpoint = []
         self.load_map()
 
     def load_map(self):
@@ -50,6 +50,10 @@ class Tilemap:
                     enemy.rect.y += 1
                 enemy.rect.y -= 1
                 self.enemies.append(enemy)
+            if obj.type == "Endpoint":
+                endpoint_x = (obj.x * scale) - 32
+                endpoint_y = (obj.y * scale + vertical_offset) - 96
+                self.endpoint.append(EndPoint(endpoint_x, endpoint_y, 32, 32))
 
     def get_tiles(self):
             return self.tiles
@@ -62,4 +66,8 @@ class Tilemap:
 
     def get_enemies(self):
         return self.enemies
+
+    def get_endpoint(self):
+        return self.endpoint
+
 
